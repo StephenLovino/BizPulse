@@ -12,7 +12,7 @@ import {
     varchar,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { type AdapterAccount } from "next-auth/adapters";
+// Removed NextAuth adapter types - using Supabase Auth instead
 import { z } from "zod";
 
 /**
@@ -22,10 +22,10 @@ import { z } from "zod";
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
 export const createTable = pgTableCreator(
-    (name) => `launchmvpfast-saas-starterkit_${name}`,
+    (name) => `bizpulse_${name}`,
 );
 
-export const usersRoleEnum = pgEnum("role", ["User", "Admin", "Super Admin"]);
+export const usersRoleEnum = pgEnum("role", ["User", "Admin", "Super Admin", "saas_owner", "business_owner", "manager", "staff"]);
 
 export const users = createTable("user", {
     id: varchar("id", { length: 255 }).notNull().primaryKey(),
@@ -44,6 +44,7 @@ export const usersRelations = relations(users, ({ many }) => ({
     accounts: many(accounts),
     membersToOrganizations: many(membersToOrganizations),
     feedback: many(feedback),
+    businesses: many(businesses),
 }));
 
 export const userInsertSchema = createInsertSchema(users, {
@@ -346,4 +347,196 @@ export const waitlistUsers = createTable("waitlistUser", {
 export const waitlistUsersSchema = createInsertSchema(waitlistUsers, {
     email: z.string().email("Email must be a valid email address"),
     name: z.string().min(3, "Name must be at least 3 characters long"),
+});
+
+// BizPulse specific schemas
+
+// Customer source enum
+export const customerSourceEnum = pgEnum("customer-source", ["qr", "manual"]);
+
+// Message type and status enums
+export const messageTypeEnum = pgEnum("message-type", ["email", "sms"]);
+export const messageStatusEnum = pgEnum("message-status", ["pending", "sent", "failed"]);
+export const messageProviderEnum = pgEnum("message-provider", ["sendgrid", "resend", "twilio"]);
+
+// Businesses table
+export const businesses = createTable("business", {
+    id: varchar("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .default(sql`gen_random_uuid()`),
+    ownerId: varchar("ownerId", { length: 255 })
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 255 }).notNull(),
+    industry: varchar("industry", { length: 255 }),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+});
+
+export const businessesRelations = relations(businesses, ({ one, many }) => ({
+    owner: one(users, {
+        fields: [businesses.ownerId],
+        references: [users.id],
+    }),
+    locations: many(locations),
+}));
+
+export const businessInsertSchema = createInsertSchema(businesses, {
+    name: z
+        .string()
+        .min(3, "Business name must be at least 3 characters long")
+        .max(255, "Business name must be at most 255 characters long"),
+    industry: z.string().max(255, "Industry must be at most 255 characters long").optional(),
+});
+
+// Locations table
+export const locations = createTable("location", {
+    id: varchar("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .default(sql`gen_random_uuid()`),
+    businessId: varchar("businessId", { length: 255 })
+        .notNull()
+        .references(() => businesses.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 255 }).notNull(),
+    address: text("address"),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+});
+
+export const locationsRelations = relations(locations, ({ one, many }) => ({
+    business: one(businesses, {
+        fields: [locations.businessId],
+        references: [businesses.id],
+    }),
+    customers: many(customers),
+    qrCodes: many(qrCodes),
+    automations: many(automations),
+}));
+
+export const locationInsertSchema = createInsertSchema(locations, {
+    name: z
+        .string()
+        .min(3, "Location name must be at least 3 characters long")
+        .max(255, "Location name must be at most 255 characters long"),
+    address: z.string().max(1000, "Address must be at most 1000 characters long").optional(),
+});
+
+// Customers table
+export const customers = createTable("customer", {
+    id: varchar("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .default(sql`gen_random_uuid()`),
+    locationId: varchar("locationId", { length: 255 })
+        .notNull()
+        .references(() => locations.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 255 }),
+    email: varchar("email", { length: 255 }),
+    phone: varchar("phone", { length: 255 }),
+    source: customerSourceEnum("source").notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+});
+
+export const customersRelations = relations(customers, ({ one, many }) => ({
+    location: one(locations, {
+        fields: [customers.locationId],
+        references: [locations.id],
+    }),
+    messages: many(messages),
+}));
+
+export const customerInsertSchema = createInsertSchema(customers, {
+    name: z.string().max(255, "Name must be at most 255 characters long").optional(),
+    email: z.string().email("Invalid email address").optional(),
+    phone: z.string().max(255, "Phone must be at most 255 characters long").optional(),
+});
+
+// QR Codes table
+export const qrCodes = createTable("qr_code", {
+    id: varchar("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .default(sql`gen_random_uuid()`),
+    locationId: varchar("locationId", { length: 255 })
+        .notNull()
+        .references(() => locations.id, { onDelete: "cascade" }),
+    label: varchar("label", { length: 255 }).notNull(),
+    formFields: jsonb("formFields").notNull(),
+    destinationUrl: text("destinationUrl"),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+});
+
+export const qrCodesRelations = relations(qrCodes, ({ one }) => ({
+    location: one(locations, {
+        fields: [qrCodes.locationId],
+        references: [locations.id],
+    }),
+}));
+
+export const qrCodeInsertSchema = createInsertSchema(qrCodes, {
+    label: z
+        .string()
+        .min(3, "Label must be at least 3 characters long")
+        .max(255, "Label must be at most 255 characters long"),
+    formFields: z.object({}).passthrough(),
+    destinationUrl: z.string().url("Invalid URL").optional(),
+});
+
+// Automations table
+export const automations = createTable("automation", {
+    id: varchar("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .default(sql`gen_random_uuid()`),
+    locationId: varchar("locationId", { length: 255 })
+        .notNull()
+        .references(() => locations.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 255 }).notNull(),
+    trigger: varchar("trigger", { length: 255 }).notNull(),
+    steps: jsonb("steps").notNull(),
+    enabled: boolean("enabled").default(true).notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+});
+
+export const automationsRelations = relations(automations, ({ one }) => ({
+    location: one(locations, {
+        fields: [automations.locationId],
+        references: [locations.id],
+    }),
+}));
+
+export const automationInsertSchema = createInsertSchema(automations, {
+    name: z
+        .string()
+        .min(3, "Automation name must be at least 3 characters long")
+        .max(255, "Automation name must be at most 255 characters long"),
+    trigger: z.string().min(1, "Trigger is required"),
+    steps: z.array(z.object({}).passthrough()),
+});
+
+// Messages table
+export const messages = createTable("message", {
+    id: varchar("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .default(sql`gen_random_uuid()`),
+    customerId: varchar("customerId", { length: 255 })
+        .notNull()
+        .references(() => customers.id, { onDelete: "cascade" }),
+    type: messageTypeEnum("type").notNull(),
+    content: text("content").notNull(),
+    status: messageStatusEnum("status").default("pending").notNull(),
+    provider: messageProviderEnum("provider").notNull(),
+    timestamp: timestamp("timestamp", { mode: "date" }).notNull().defaultNow(),
+});
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+    customer: one(customers, {
+        fields: [messages.customerId],
+        references: [customers.id],
+    }),
+}));
+
+export const messageInsertSchema = createInsertSchema(messages, {
+    content: z.string().min(1, "Message content is required"),
 });

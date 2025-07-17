@@ -5,11 +5,11 @@
  */
 
 export const siteConfig = {
-    name: "launchmvpfast",
+    name: "BizPulse",
     description:
-        "Get your startup off the ground quickly with launchmvpfast! This open source Next.js starter kit provides the foundation you need to build your MVP fast – pre-built components, optimized performance, and ready-to-go styling",
+        "Transform your business operations with BizPulse! Our comprehensive SaaS platform provides powerful tools for customer management, lead generation, and business automation – everything you need to grow your business efficiently",
     orgImage:
         "https://utfs.io/f/4ae0ddb1-4260-46f5-aa7c-70408cc192b9-aadavt.png",
-    contactEmail: "hello@support.launchmvpfast.com",
-    noReplyEmail: "launchmvpfast@support.launchmvpfast.com",
+    contactEmail: "hello@support.bizpulse.com",
+    noReplyEmail: "noreply@support.bizpulse.com",
 } as const;

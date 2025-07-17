@@ -1,6 +1,6 @@
 import { getOrganizations } from "@/server/actions/organization/queries";
 import { NewUserOrgForm } from "@/app/(app)/_components/new-user-org-form";
-import { getUser } from "@/server/auth";
+import { getUser } from "@/lib/supabase/auth";
 
 export async function CreateFirstOrgForm() {
     const { userOrgs } = await getOrganizations();

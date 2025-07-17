@@ -1,7 +1,9 @@
 "use client";
 
 import { Slot } from "@radix-ui/react-slot";
-import { signOut } from "next-auth/react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { siteUrls } from "@/config/urls";
 import React from "react";
 
 type SignoutTriggerProps = {
@@ -12,17 +14,36 @@ type SignoutTriggerProps = {
 } & React.HTMLAttributes<HTMLButtonElement>;
 
 export function SignoutTrigger({
-    callbackUrl,
+    callbackUrl = siteUrls.auth.login,
     redirect = true,
     asChild,
     children,
     ...props
 }: SignoutTriggerProps) {
     const Comp = asChild ? Slot : "button";
+    const router = useRouter();
+
+    const handleSignOut = async () => {
+        try {
+            const supabase = createClient();
+            const { error } = await supabase.auth.signOut();
+
+            if (error) {
+                console.error('Error signing out:', error);
+                return;
+            }
+
+            if (redirect) {
+                router.push(callbackUrl);
+            }
+        } catch (error) {
+            console.error('Error signing out:', error);
+        }
+    };
 
     return (
         <Comp
-            onClick={async () => await signOut({ callbackUrl, redirect })}
+            onClick={handleSignOut}
             {...props}
         >
             {children}

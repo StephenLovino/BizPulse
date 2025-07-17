@@ -8,8 +8,8 @@
  */
 
 export const siteUrls = {
-    publicUrl: "https://saasdemo.launchmvpfast.com",
-    github: "https://github.com/alifarooq9/launchmvpfast",
+    publicUrl: "https://bizpulse.com",
+    github: "https://github.com/yourusername/bizpulse",
     home: "/",
     pricing: "/pricing",
     features: "/features",
@@ -19,10 +19,24 @@ export const siteUrls = {
     changelogs: "/changelogs",
     maintenance: "/maintenance",
     waitlist: "/waitlist",
-    launchmvpfast: "https://www.launchmvpfast.com",
+    bizpulse: "https://www.bizpulse.com",
+
+    // Public pages
+    terms: "/terms",
+    privacy: "/privacy",
+    qr: "/qr",
 
     dashboard: {
         home: "/dashboard",
+        settings: "/dashboard/settings",
+        locations: "/dashboard/locations",
+        qr: "/dashboard/qr",
+        crm: "/dashboard/crm",
+        automations: "/dashboard/automations",
+        templates: "/dashboard/templates",
+        team: "/dashboard/team",
+        billing: "/dashboard/billing",
+        subscription: "/dashboard/subscription",
     },
     feedback: "/feedback",
     organization: {
@@ -38,8 +52,10 @@ export const siteUrls = {
         signup: "/auth/signup",
     },
     admin: {
+        overview: "/admin/overview",
         dashboard: "/admin/dashboard",
         users: "/admin/users",
+        businesses: "/admin/businesses",
         organizations: "/admin/organizations",
         settings: "/admin/settings",
         waitlist: "/admin/waitlist",
@@ -63,11 +79,23 @@ export const publicRoutes: string[] = [
     siteUrls.changelogs,
     siteUrls.maintenance,
     siteUrls.waitlist,
-    siteUrls.launchmvpfast,
+    siteUrls.bizpulse,
+    siteUrls.terms,
+    siteUrls.privacy,
+    siteUrls.qr,
 ];
 
 export const protectedRoutes: string[] = [
     siteUrls.dashboard.home,
+    siteUrls.dashboard.settings,
+    siteUrls.dashboard.locations,
+    siteUrls.dashboard.qr,
+    siteUrls.dashboard.crm,
+    siteUrls.dashboard.automations,
+    siteUrls.dashboard.templates,
+    siteUrls.dashboard.team,
+    siteUrls.dashboard.billing,
+    siteUrls.dashboard.subscription,
     siteUrls.feedback,
     siteUrls.organization.members.home,
     siteUrls.organization.members.invite,
@@ -75,8 +103,10 @@ export const protectedRoutes: string[] = [
     siteUrls.organization.plansAndBilling,
     siteUrls.auth.login,
     siteUrls.auth.signup,
+    siteUrls.admin.overview,
     siteUrls.admin.dashboard,
     siteUrls.admin.users,
+    siteUrls.admin.businesses,
     siteUrls.admin.organizations,
     siteUrls.admin.settings,
     siteUrls.admin.waitlist,

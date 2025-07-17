@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SocialLogins } from "@/app/auth/_components/social-logins";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
 const formSchema = z.object({
@@ -45,16 +45,23 @@ export function AuthForm({ type }: AuthFormProps) {
 
     const onSubmit = async (data: formSchemaType) => {
         setIsLoading(true);
+        const supabase = createClient();
 
         try {
-            await signIn("email", {
+            const { error } = await supabase.auth.signInWithOtp({
                 email: data.email,
-                callbackUrl: siteUrls.dashboard.home,
-                redirect: false,
+                options: {
+                    emailRedirectTo: `${window.location.origin}/auth/callback?next=${siteUrls.dashboard.home}`,
+                },
             });
-            toast.success("Check your email for the magic link", {
-                description: "also check your spam folder if you don't see it.",
-            });
+
+            if (error) {
+                toast.error(error.message);
+            } else {
+                toast.success("Check your email for the magic link", {
+                    description: "also check your spam folder if you don't see it.",
+                });
+            }
         } catch (error) {
             toast.error("An error occurred. Please try again later.");
         } finally {

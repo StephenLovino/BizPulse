@@ -4,13 +4,14 @@
  */
 
 await import("./src/env.js");
-import createMDX from "fumadocs-mdx/config";
+// Temporarily disabled MDX for initial testing
+// import createMDX from "fumadocs-mdx/config";
 
-const withMDX = createMDX({
-    mdxOptions: {
-        lastModifiedTime: "git",
-    },
-});
+// const withMDX = createMDX({
+//     mdxOptions: {
+//         lastModifiedTime: "git",
+//     },
+// });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -43,4 +44,4 @@ const nextConfig = {
     skipTrailingSlashRedirect: true,
 };
 
-export default withMDX(nextConfig);
+export default nextConfig; // withMDX(nextConfig);

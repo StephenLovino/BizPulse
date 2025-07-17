@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { UserDropdown } from "@/app/(app)/_components/user-dropdown";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { SidebarNav } from "@/app/(app)/_components/sidebar-nav";
-import { getUser } from "@/server/auth";
+import { getUser } from "@/lib/supabase/auth";
 import {
     OrgSelectDropdown,
     type UserOrgs,

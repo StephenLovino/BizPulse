@@ -1,4 +1,4 @@
-import { getUser } from "@/server/auth";
+import { getUser } from "@/lib/supabase/auth";
 import { NewUserProfileForm } from "@/app/(app)/_components/new-user-profile-form";
 import { NewUserOrgForm } from "@/app/(app)/_components/new-user-org-form";
 import { cookies } from "next/headers";

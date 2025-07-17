@@ -3,12 +3,15 @@
  * @purpose This file contains all the server procedures
  */
 
-import { getUser } from "@/server/auth";
-import { type User } from "next-auth";
-import { usersRoleEnum } from "@/server/db/schema";
+import { getUser } from "@/lib/supabase/auth";
+import { ensureUserExists } from "@/lib/supabase/user-sync";
+import { type User } from "@supabase/supabase-js";
+import { usersRoleEnum, type users } from "@/server/db/schema";
 import { z } from "zod";
 
 const userRoles = z.enum(usersRoleEnum.enumValues);
+
+type AppUser = typeof users.$inferSelect;
 
 /**
  * @purpose This is a protected procedure
@@ -16,14 +19,22 @@ const userRoles = z.enum(usersRoleEnum.enumValues);
  * */
 
 export const protectedProcedure = async () => {
-    const user = await getUser();
+    const authUser = await getUser();
 
-    if (!user) {
-        throw new Error("You is not authenticated");
+    if (!authUser) {
+        throw new Error("You are not authenticated");
+    }
+
+    // Ensure user exists in application database
+    const appUser = await ensureUserExists();
+
+    if (!appUser) {
+        throw new Error("Failed to sync user data");
     }
 
     return {
-        user: user as User,
+        user: appUser as AppUser,
+        authUser: authUser as User,
     };
 };
 
@@ -33,18 +44,29 @@ export const protectedProcedure = async () => {
  * */
 
 export const adminProcedure = async () => {
-    const user = await getUser();
+    const authUser = await getUser();
+
+    if (!authUser) {
+        throw new Error("You are not authenticated");
+    }
+
+    // Ensure user exists in application database
+    const appUser = await ensureUserExists();
+
+    if (!appUser) {
+        throw new Error("Failed to sync user data");
+    }
 
     if (
-        user &&
-        user.role !== userRoles.Values.Admin &&
-        user.role !== userRoles.Values["Super Admin"]
+        appUser.role !== userRoles.Values.Admin &&
+        appUser.role !== userRoles.Values["Super Admin"]
     ) {
         throw new Error("You are not authorized to perform this action");
     }
 
     return {
-        user: user as User,
+        user: appUser as AppUser,
+        authUser: authUser as User,
     };
 };
 
@@ -54,13 +76,25 @@ export const adminProcedure = async () => {
  * */
 
 export const superAdminProcedure = async () => {
-    const user = await getUser();
+    const authUser = await getUser();
 
-    if (user && user.role !== userRoles.Values["Super Admin"]) {
+    if (!authUser) {
+        throw new Error("You are not authenticated");
+    }
+
+    // Ensure user exists in application database
+    const appUser = await ensureUserExists();
+
+    if (!appUser) {
+        throw new Error("Failed to sync user data");
+    }
+
+    if (appUser.role !== userRoles.Values["Super Admin"]) {
         throw new Error("You are not authorized to perform this action");
     }
 
     return {
-        user: user as User,
+        user: appUser as AppUser,
+        authUser: authUser as User,
     };
 };

@@ -1,5 +1,5 @@
 import { orgConfig } from "@/config/organization";
-import { env } from "@/env";
+// import { env } from "@/env"; // Temporarily disabled for initial testing
 import { type ClassValue, clsx } from "clsx";
 import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
@@ -18,7 +18,8 @@ export function setOrgCookie(orgId: string) {
 }
 
 export function getAbsoluteUrl(path: string) {
-    return `${env.NEXTAUTH_URL}${path}`;
+    // return `${env.NEXTAUTH_URL}${path}`;
+    return `http://localhost:3000${path}`; // Temporary fallback for testing
 }
 
 export function thousandToK(value: number) {

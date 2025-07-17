@@ -16,7 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { usersRoleEnum } from "@/server/db/schema";
 import { LogOutIcon } from "lucide-react";
-import { type User } from "next-auth";
+import { type User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { Fragment } from "react";
 import { z } from "zod";

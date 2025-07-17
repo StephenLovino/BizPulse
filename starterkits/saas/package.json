@@ -1,5 +1,5 @@
 {
-    "name": "launchmvpfast-saas",
+    "name": "bizpulse-saas",
     "version": "0.1.0",
     "private": true,
     "type": "module",
@@ -14,6 +14,7 @@
     },
     "dependencies": {
         "@auth/drizzle-adapter": "^0.7.0",
+        "@auth/supabase-adapter": "^1.10.0",
         "@hookform/resolvers": "^3.3.4",
         "@lemonsqueezy/lemonsqueezy.js": "^2.2.0",
         "@mdx-js/react": "^3.0.1",
@@ -33,6 +34,8 @@
         "@radix-ui/react-slot": "^1.0.2",
         "@radix-ui/react-tabs": "^1.0.4",
         "@radix-ui/react-tooltip": "^1.0.7",
+        "@supabase/ssr": "^0.6.1",
+        "@supabase/supabase-js": "^2.51.0",
         "@t3-oss/env-nextjs": "^0.9.2",
         "@tanstack/react-query": "^5.29.2",
         "@tanstack/react-table": "^8.16.0",
@@ -51,7 +54,6 @@
         "json2csv": "6.0.0-alpha.2",
         "lucide-react": "^0.368.0",
         "next": "^14.2.1",
-        "next-auth": "^4.24.6",
         "next-themes": "^0.3.0",
         "nodemailer": "^6.9.13",
         "postgres": "^3.4.3",
@@ -77,8 +79,8 @@
         "@tailwindcss/typography": "^0.5.12",
         "@types/eslint": "^8.56.9",
         "@types/json2csv": "^5.0.7",
-        "@types/node": "^20.12.7",
-        "@types/react": "^18.2.60",
+        "@types/node": "20.19.8",
+        "@types/react": "18.3.23",
         "@types/react-dom": "^18.2.19",
         "@types/uuid": "^9.0.8",
         "@typescript-eslint/eslint-plugin": "^7.7.0",
@@ -92,7 +94,7 @@
         "prettier": "^3.2.5",
         "prettier-plugin-tailwindcss": "^0.5.14",
         "tailwindcss": "^3.4.3",
-        "typescript": "^5.4.5"
+        "typescript": "5.8.3"
     },
     "ct3aMetadata": {
         "initVersion": "7.26.0"

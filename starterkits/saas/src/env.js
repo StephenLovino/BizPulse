@@ -17,11 +17,7 @@ export const env = createEnv({
         NODE_ENV: z
             .enum(["development", "test", "production"])
             .default("development"),
-        NEXTAUTH_SECRET:
-            process.env.NODE_ENV === "production"
-                ? z.string()
-                : z.string().optional(),
-        NEXTAUTH_URL: z.string().url(),
+
         GOOGLE_CLIENT_ID: z.string(),
         GOOGLE_CLIENT_SECRET: z.string(),
         GITHUB_CLIENT_ID: z.string(),
@@ -32,6 +28,7 @@ export const env = createEnv({
         LEMONSQUEEZY_API_KEY: z.string(),
         LEMONSQUEEZY_STORE_ID: z.string(),
         LEMONSQUEEZY_WEBHOOK_SECRET: z.string(),
+        SUPABASE_SERVICE_ROLE_KEY: z.string(),
     },
 
     /**
@@ -41,6 +38,8 @@ export const env = createEnv({
      */
     client: {
         // NEXT_PUBLIC_CLIENTVAR: z.string(),
+        NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
         NEXT_PUBLIC_POSTHOG_KEY: z.string(),
         NEXT_PUBLIC_WAITLIST_MODE: z.enum(["on", "off"]).default("off"),
         NEXT_PUBLIC_MAINTENANCE_MODE: z.enum(["on", "off"]).default("off"),
@@ -53,8 +52,6 @@ export const env = createEnv({
     runtimeEnv: {
         DATABASE_URL: process.env.DATABASE_URL,
         NODE_ENV: process.env.NODE_ENV,
-        NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-        NEXTAUTH_URL: process.env.NEXTAUTH_URL,
         RESEND_API_KEY: process.env.RESEND_API_KEY,
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
@@ -65,6 +62,9 @@ export const env = createEnv({
         LEMONSQUEEZY_API_KEY: process.env.LEMONSQUEEZY_API_KEY,
         LEMONSQUEEZY_STORE_ID: process.env.LEMONSQUEEZY_STORE_ID,
         LEMONSQUEEZY_WEBHOOK_SECRET: process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
+        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+        NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
         NEXT_PUBLIC_WAITLIST_MODE: process.env.NEXT_PUBLIC_WAITLIST_MODE,
         NEXT_PUBLIC_MAINTENANCE_MODE: process.env.NEXT_PUBLIC_MAINTENANCE_MODE,

@@ -4,8 +4,8 @@ import { UserImageForm } from "@/app/(app)/(user)/profile/settings/_components/u
 import { UserVerifyForm } from "@/app/(app)/(user)/profile/settings/_components/user-verify-form";
 import { profileSettingsPageConfig } from "@/app/(app)/(user)/profile/settings/_constants/page-config";
 import { UserAppearanceForm } from "@/app/(app)/(user)/profile/settings/_components/user-appearance-form";
-import { getUser } from "@/server/auth";
-import { type User } from "next-auth";
+import { getUser } from "@/lib/supabase/auth";
+import { type User } from "@supabase/supabase-js";
 
 /**
  * This is the settings page for the user profile.

@@ -24,7 +24,7 @@ import {
     deleteUserMutation,
 } from "@/server/actions/user/mutations";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { createClient } from "@/lib/supabase/client";
 import { siteUrls } from "@/config/urls";
 
 type Role = (typeof usersRoleEnum.enumValues)[number];
@@ -52,12 +52,14 @@ export function ColumnDropdown({ email, id, role }: UsersData) {
     const sendLoginLink = () => {
         toast.promise(
             async () => {
-                await signIn("email", {
+                const supabase = createClient();
+                const { error } = await supabase.auth.signInWithOtp({
                     email,
-                    callbackUrl: siteUrls.dashboard.home,
-                    redirect: false,
-                    test: "Testing data",
+                    options: {
+                        emailRedirectTo: `${window.location.origin}/auth/callback?next=${siteUrls.dashboard.home}`,
+                    },
                 });
+                if (error) throw error;
             },
             {
                 loading: "Sending verification link...",

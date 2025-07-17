@@ -1,6 +1,6 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
-import { getUser } from "@/server/auth";
+import { getUser } from "@/lib/supabase/auth";
 import { getOrganizations } from "@/server/actions/organization/queries";
 import { db } from "@/server/db";
 import { and, eq } from "drizzle-orm";

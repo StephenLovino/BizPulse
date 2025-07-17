@@ -11,8 +11,8 @@ import {
 import { Icons } from "@/components/ui/icons";
 import { siteUrls } from "@/config/urls";
 import { useMutation } from "@tanstack/react-query";
-import type { User } from "next-auth";
-import { signIn } from "next-auth/react";
+import type { User } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
 type UserVerifyFormProps = {
@@ -21,16 +21,20 @@ type UserVerifyFormProps = {
 
 export function UserVerifyForm({ user }: UserVerifyFormProps) {
     const { isPending, mutate } = useMutation({
-        mutationFn: () =>
-            signIn("email", {
-                email: user.email,
-                redirect: false,
-                callbackUrl: siteUrls.profile.settings,
-            }),
+        mutationFn: async () => {
+            const supabase = createClient();
+            const { error } = await supabase.auth.signInWithOtp({
+                email: user.email!,
+                options: {
+                    emailRedirectTo: `${window.location.origin}/auth/callback?next=${siteUrls.profile.settings}`,
+                },
+            });
+            if (error) throw error;
+        },
         onSuccess: () => {
             toast.success("Verification email sent! Check your inbox.");
         },
-        onError: (error) => {
+        onError: (error: any) => {
             toast.error(error.message || "Failed to send verification email");
         },
     });

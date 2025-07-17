@@ -3,17 +3,17 @@
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { siteUrls } from "@/config/urls";
-import { signIn } from "next-auth/react";
+import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
 
-/**  
+/**
     For additional social logins:
 
     - Create a new button for each additional social login. Ensure to use the `variant="outline"` property and set the icon to represent the respective social platform.
-    - Add the corresponding configuration for each new social login in the `next-auth` configuration file located at /server/auth.ts
+    - Add the corresponding configuration for each new social login in the Supabase dashboard under Authentication > Providers
 
-    For more information on providers, refer to the `next-auth` documentation: @see https://next-auth.js.org/providers
+    For more information on providers, refer to the Supabase documentation: @see https://supabase.com/docs/guides/auth/social-login
 */
 
 export function SocialLogins() {
@@ -21,11 +21,19 @@ export function SocialLogins() {
 
     const githubLogin = async () => {
         setIsLoading(true);
+        const supabase = createClient();
+
         try {
-            await signIn("github", {
-                callbackUrl: siteUrls.dashboard.home,
-                redirect: true,
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'github',
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback?next=${siteUrls.dashboard.home}`,
+                },
             });
+
+            if (error) {
+                toast.error(error.message);
+            }
         } catch (error) {
             toast.error("An error occurred. Please try again later.");
         } finally {
@@ -35,11 +43,19 @@ export function SocialLogins() {
 
     const googleLogin = async () => {
         setIsLoading(true);
+        const supabase = createClient();
+
         try {
-            await signIn("google", {
-                callbackUrl: siteUrls.dashboard.home,
-                redirect: true,
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback?next=${siteUrls.dashboard.home}`,
+                },
             });
+
+            if (error) {
+                toast.error(error.message);
+            }
         } catch (error) {
             toast.error("An error occurred. Please try again later.");
         } finally {

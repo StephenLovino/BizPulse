@@ -1,6 +1,6 @@
 import { buttonVariants } from "@/components/ui/button";
 import { siteUrls } from "@/config/urls";
-import { getUser } from "@/server/auth";
+import { getUser } from "@/lib/supabase/auth";
 import Link from "next/link";
 import { Fragment } from "react";
 

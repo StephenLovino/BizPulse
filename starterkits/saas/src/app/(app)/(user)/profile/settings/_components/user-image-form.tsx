@@ -10,7 +10,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import type { User } from "next-auth";
+import type { User } from "@supabase/supabase-js";
 import {
     Dialog,
     DialogClose,

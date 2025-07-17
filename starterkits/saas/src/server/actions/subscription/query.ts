@@ -5,7 +5,7 @@ import { siteUrls } from "@/config/urls";
 import { env } from "@/env";
 import { getAbsoluteUrl } from "@/lib/utils";
 import { getOrganizations } from "@/server/actions/organization/queries";
-import { getUser } from "@/server/auth";
+import { getUser } from "@/lib/supabase/auth";
 import { db } from "@/server/db";
 import { subscriptions } from "@/server/db/schema";
 import { configureLemonSqueezy } from "@/server/lemonsqueezy";

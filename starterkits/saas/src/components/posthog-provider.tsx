@@ -1,53 +1,48 @@
 "use client";
 
-import { env } from "@/env";
-import { useSession } from "next-auth/react";
+// import { env } from "@/env"; // Temporarily disabled for initial testing
+import { useUser } from "@/lib/supabase/hooks";
 import { usePathname } from "next/navigation";
 import posthog from "posthog-js";
 import { PostHogProvider as CSPostHogProvider } from "posthog-js/react";
 import { useEffect } from "react";
 
-if (typeof window !== "undefined") {
-    posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
-        api_host: "/ingest",
-        rate_limiting: {
-            events_burst_limit: 10,
-            events_per_second: 5,
-        },
-        loaded: (posthog) => {
-            if (env.NODE_ENV === "development") posthog.debug();
-        },
-    });
-}
+// Temporarily disabled PostHog initialization for testing
+// if (typeof window !== "undefined") {
+//     posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
+//         api_host: "/ingest",
+//         rate_limiting: {
+//             events_burst_limit: 10,
+//             events_per_second: 5,
+//         },
+//         loaded: (posthog) => {
+//             if (env.NODE_ENV === "development") posthog.debug();
+//         },
+//     });
+// }
 
 type PostHogProviderProps = {
     children: React.ReactNode;
 };
 
 export function PosthogProvider({ children }: PostHogProviderProps) {
-    return (
-        <>
-            <CapturePageviewClient captureOnPathChange={true} />
-            <CSPostHogProvider client={posthog}>
-                <PosthogAuthWrapper>{children}</PosthogAuthWrapper>
-            </CSPostHogProvider>
-        </>
-    );
+    // Temporarily simplified for testing - just return children without PostHog
+    return <>{children}</>;
 }
 
 function PosthogAuthWrapper({ children }: PostHogProviderProps) {
-    const { data: session, status } = useSession();
+    const { user, loading } = useUser();
 
     useEffect(() => {
-        if (status === "authenticated") {
-            posthog.identify(session.user.id, {
-                email: session.user.email,
-                name: session.user.name,
+        if (!loading && user) {
+            posthog.identify(user.id, {
+                email: user.email,
+                name: user.user_metadata?.name || user.email,
             });
-        } else if (status === "unauthenticated") {
+        } else if (!loading && !user) {
             posthog.reset();
         }
-    }, [session, status]);
+    }, [user, loading]);
 
     return children;
 }
